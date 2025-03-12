@@ -333,7 +333,7 @@ if __name__ == '__main__':
       dataFrames.append(pd.DataFrame(Data[j:j+3], dtype=float, index = [f'Raw Image: {img_Names[j // 3]}', f'Von Neumann: {img_Names[j // 3]}', f'Hashed: {img_Names[j // 3]}'], columns=cols))
 
   final_df = pd.concat(dataFrames)
-  statistic_directory = '/Users/eliotgambino/Library/CloudStorage/OneDrive-UniversityofBirmingham/Uni-Documents/Phys-Year2-docs/year2-modules/labProject/PythonCode/VScodePython/VScodeImageBinaryFiles/VScodeStatisticsOfFit/'
+  statistic_directory = save_directory + 'VScodeStatisticsOfFit/'
   final_df.to_csv(statistic_directory + 'statisticalValues.csv')
   
 
