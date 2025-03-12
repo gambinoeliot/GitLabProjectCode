@@ -8,7 +8,7 @@ import cv2
 import hashlib
 from hashlib import blake2b
 from scipy.stats import truncnorm
-from
+
 
 
 def image_file_details(): 
@@ -30,7 +30,7 @@ def image_file_details():
   pd.Series(img[:,:,1].flatten()).plot(kind='hist', bins=100, title='Distribution of Pixel Values.', ax=axsetup[2])
   plt.show()
 
-#Now generate the random number sequences using the randomness algorithm. We will get one sequence which has been hashed and one sequence which hasn't to compare the effectiveness of hashing the data.
+# Now generate the random number sequences using the randomness algorithm. We will get one sequence which has been hashed and one sequence which hasn't to compare the effectiveness of hashing the data.
 
 def extract_bits_from_image(img, crop_box=None):
   # # Extract the least significant bit from each pixel.
@@ -40,6 +40,9 @@ def extract_bits_from_image(img, crop_box=None):
   bit_stream = lsb_array.flatten()
   return bit_stream
 
+# Now shuffle the binary values to scramble the order. This removes any underlying pattern in the phone camera.
+def shuffle_bits(bit_array):
+  return np.random.permutation(bit_array)
 
 """
 Implements the von Neumann extractor:
@@ -216,7 +219,8 @@ if __name__ == '__main__':
   Data = []
   img_Names = []
 
-  for i in range(len(img_files)):
+  #for i in range(len(img_files)):
+  for i in range(5): # this is just a test to see if all goes well
 
     file_path = img_files[i]
     img = plt.imread(file_path)
@@ -229,10 +233,11 @@ if __name__ == '__main__':
     # image_details = image_file_details()
     #print(image_details)
 
-    # Step 2: gather the first array of binary values directly from the image, the Von Neumann extracted bits, and the hashed bits
+    # Step 2: gather the first array of binary values directly from the image, then shuffled them, then Von Neumann extracted bits, and then hashed bits
     print('Processing random bits...')
     arrayVals_img = extract_bits_from_image(img)
-    arrayVals_VN = von_neumann_extractor(bit_array=arrayVals_img)
+    shuffled_bits = shuffle_bits(arrayVals_img)
+    arrayVals_VN = von_neumann_extractor(bit_array=shuffled_bits)
     von_byte_data = bits_to_bytes(extracted_bits=arrayVals_VN)[0]
     arrayVals_hash= hash_random_data(von_byte_data=von_byte_data)
     Binary_data = [arrayVals_img, arrayVals_VN, arrayVals_hash]
@@ -245,9 +250,9 @@ if __name__ == '__main__':
     Names = [ArrayVals_img, ArrayVals_VN, ArrayVals_Hash]
 
     # Step 3: save the binary values to files in a given directory
-    Directory = '/Users/eliotgambino/Library/CloudStorage/OneDrive-UniversityofBirmingham/Uni-Documents/Phys-Year2-docs/year2-modules/labProject/PythonCode/VScodePython/VScodeImageBinaryFiles/'
+    save_directory = '/Users/eliotgambino/Library/CloudStorage/OneDrive-UniversityofBirmingham/Uni-Documents/Phys-Year2-docs/year2-modules/labProject/PythonCode/VScodePython/saved_data_2/'
     for j in range(len(Names)):
-      specific_directory = Directory+'binaryValues/'
+      specific_directory = save_directory+'binaryValues/'
       save_to_file = specific_directory + Names[j] + '_' + name + ".csv"
       df = pd.DataFrame(Binary_data[j], dtype=int)
       df.to_csv(save_to_file, index=False)
@@ -267,7 +272,7 @@ if __name__ == '__main__':
     conditions = z_accept_reject(z_values)
 
     print(f"Z-values generated. Image z-value: {z_img}, Von Neumann z-value: {z_VN}, hashed z-value: {z_hash}.")
-    print(f'The acceptance region for a value of alpha = {conditions[0]} has lower and upper bounds of: {conditions[1], conditions[2]}. For the Image bits: {conditions[3]}, Von Neumann bits: {conditions[4]}, Hashed bits: {conditions[5]}. This is based on the z-value statistic.')
+    #print(f'The acceptance region for a value of alpha = {conditions[0]} has lower and upper bounds of: {conditions[1], conditions[2]}. For the Image bits: {conditions[3]}, Von Neumann bits: {conditions[4]}, Hashed bits: {conditions[5]}. This is based on the z-value statistic.')
 
     fig, axs = plt.subplots(1,2, figsize=(15,5))
     # Step 4: generate 8-bit values (data) for raw, von neumann and hashed bits
@@ -311,7 +316,7 @@ if __name__ == '__main__':
     # save the plots
     plots = [ECDF_plot, hist_plot]
     for i, fig in enumerate(plots):
-      specific_directory = Directory+'Plots/'
+      specific_directory = save_directory+'Plots/'
       fig.savefig(f"{specific_directory}plot_{name}_{i+1}.png", dpi=300)
       plt.close(fig)  # Close to free memory
 
