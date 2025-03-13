@@ -285,7 +285,6 @@ if __name__ == '__main__':
 
     # Step 5: Create an ECDF plot of the Von Neumann data and plot against a standard normal CDF
     ECDF_plot = plot_ecdf(data_VN, name)
-    print(ECDF_plot)
 
     # Step 5: Implement KS test and Anderson-Darling tests for raw, von neumann and hashed bits
     ks_statistic_VN, ks_p_value_VN = KStest(data_VN)[0], KStest(data_VN)[1]
@@ -311,7 +310,6 @@ if __name__ == '__main__':
 
     # Step 6: plot a histogram of the z-shifted values from the Von Neumann byte number data against a standard normal
     hist_plot = plotting_hist(data_VN, name)
-    print(hist_plot)
 
     # save the plots
     plots = [ECDF_plot, hist_plot]
@@ -326,7 +324,7 @@ if __name__ == '__main__':
   # Saving the data we have gathered as a CSV file
   cols = ['z-value', 'AD-Statistic', 'KS p-value', 'Anderson Darling Statistic']
   dataFrames = []
-  for j in range(0, len(Data), 3): 
+  for j in range(0, len(Data), 3): #the 3 represents Raw, VN and Hashed
     if j+3 == len(Data):
       dataFrames.append(pd.DataFrame(Data[j:], dtype=float, index = [f'Raw Image: {img_Names[j // 3]}', f'Von Neumann: {img_Names[j // 3]}', f'Hashed: {img_Names[j // 3]}'], columns=cols))
     else:
